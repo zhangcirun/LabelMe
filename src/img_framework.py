@@ -46,3 +46,11 @@ class ImgFrameWorkLayout(QGridLayout):
                 box.set_finished(True)
                 box.update_label(label_name)
                 break
+
+    def reset_all(self):
+        for box in self.boxes:
+            box.reset()
+
+    def info(self):
+        for box in self.boxes:
+            print(box.is_finished)

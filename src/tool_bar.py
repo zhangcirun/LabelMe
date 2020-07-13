@@ -10,7 +10,6 @@ Software    : PyCharm
 """
 
 from PyQt5.Qt import *
-from PyQt5 import QtGui
 
 
 class ToolBar(QToolBar):
@@ -24,6 +23,10 @@ class ToolBar(QToolBar):
         self.addAction(bar_save)
 
         bar_exit = QAction(QIcon("../img/exit.png"), "exit", self)
+        self.addAction(bar_exit)
+
+        bar_exit = QAction(QIcon("../img/save2.png"), "exit2", self)
+
         self.addAction(bar_exit)
 
         self.actionTriggered[QAction].connect(self.action_toolbar)

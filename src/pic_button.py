@@ -16,7 +16,8 @@ class PicButton(QAbstractButton):
     def __init__(self, pixmap, parent=None):
         super(PicButton, self).__init__(parent)
         self.pixmap = pixmap
-        self.setText('PLPLPLPLP')
+        self.setFixedSize(QSize(80, 80))
+
     def paintEvent(self, event):
         painter = QPainter(self)
         painter.drawPixmap(event.rect(), self.pixmap)

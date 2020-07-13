@@ -27,7 +27,7 @@ class ImgLabel(QLabel):
 class ImgBox(QVBoxLayout):
     is_focused = False
     is_finished = False
-    label = None
+    label = 'None'
 
     def __init__(self, parent, img_path, img_name):
         super().__init__()
@@ -44,10 +44,13 @@ class ImgBox(QVBoxLayout):
         self.tag.setAlignment(Qt.AlignVCenter)
 
         self.icon = QLabel()
-        gif = QMovie('../img/91.gif')
-        gif.setScaledSize(QSize(30, 30))
-        gif.start()
-        self.icon.setMovie(gif)
+        self.icon_img = QPixmap('../img/check.png')
+        self.icon_img = self.icon_img.scaled(30, 30, Qt.KeepAspectRatio)
+
+        self.gif = QMovie('../img/91.gif')
+        self.gif.setScaledSize(QSize(30, 30))
+        self.gif.start()
+        self.icon.setMovie(self.gif)
 
         self.hbox.addWidget(self.icon, 1)
         self.hbox.addStretch(6)
@@ -79,14 +82,23 @@ class ImgBox(QVBoxLayout):
         else:
             self.img.setStyleSheet("border:10px solid rgb(217, 216, 212); ")
 
+        print(self.is_finished)
+        if self.is_finished:
+            self.gif.stop()
+            self.icon.setPixmap(self.icon_img)
+            self.icon.setAlignment(Qt.AlignLeft)
+            self.container.setStyleSheet("background-color: rgb(192, 217, 143); ")
+        else:
+            self.gif.start()
+            self.icon.setMovie(self.gif)
+            self.container.setStyleSheet("background-color: rgb(189, 188, 185); ")
+
+        self.container.update()
+        self.icon.update()
         self.img.update()
 
-        if self.is_finished:
-            icon_img = QPixmap('../img/check.png')
-            self.icon.setPixmap(icon_img.scaled(30, 30, Qt.KeepAspectRatio))
-            self.icon.setAlignment(Qt.AlignLeft)
-
-            self.container.setStyleSheet("background-color: rgb(192, 217, 143); ")
-
-            self.container.update()
-            self.icon.update()
+    def reset(self):
+        self.update_label('None')
+        self.is_finished = False
+        self.is_focused = False
+        self.update_border()

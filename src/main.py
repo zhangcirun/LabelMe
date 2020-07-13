@@ -17,7 +17,7 @@ from src.label_list import LabelListLayout
 from src.img_framework import ImgFrameWorkLayout
 from src.tool_bar import ToolBar
 from src.setting_window import SettingWindow
-
+from src.control_buttons import ControlButtonsLayout
 
 class MainWindow(QMainWindow):
     tool_bar = None
@@ -25,6 +25,7 @@ class MainWindow(QMainWindow):
     label_list_layout = None
     img_framework_layout = None
     file_list_layout = None
+    control_buttons_layout = None
 
     def __init__(self):
         super().__init__()
@@ -36,21 +37,24 @@ class MainWindow(QMainWindow):
         self.tool_bar = ToolBar(self)
         self.img_framework_layout = ImgFrameWorkLayout(self)
         self.label_list_layout = LabelListLayout(self)
+        self.file_list_layout = ImgListLayout(self)
+        self.control_buttons_layout = ControlButtonsLayout(self)
 
         self.centralWidget = QWidget()
         self.setCentralWidget(self.centralWidget)
 
-        self.file_list_layout = ImgListLayout(self)
-
         self.addToolBar(self.tool_bar)
+
         self.HLayout = QHBoxLayout(self.centralWidget)
         self.HLayout.addLayout(self.img_framework_layout)
         self.HLayout.addLayout(self.label_list_layout)
         self.HLayout.addLayout(self.file_list_layout)
+        self.HLayout.addLayout(self.control_buttons_layout)
 
         self.HLayout.setStretch(0, 6)
         self.HLayout.setStretch(1, 3)
         self.HLayout.setStretch(2, 3)
+        self.HLayout.setStretch(3, 1)
 
     def action_new_setting_window(self):
         if self.setting_window is None:
@@ -58,7 +62,7 @@ class MainWindow(QMainWindow):
         self.setting_window.show()
 
     def set_width_height(self):
-        self.setFixedWidth(1300)
+        self.setFixedWidth(1350)
         self.setFixedHeight(800)
 
 
