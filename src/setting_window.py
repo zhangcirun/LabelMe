@@ -77,12 +77,12 @@ class SettingWindow(QMainWindow):
             item_new.setIcon(QIcon('../img/label.png'))
             self.label_dict[name] = {'url': url}
             self.listwidget.addItem(item_new)
-            self.parent().label_list.refresh_tag_buttons(self.label_dict)
+            self.parent().label_list_layout.refresh_tag_buttons(self.label_dict)
         print(self.label_dict)
 
     def delete_item(self, name):
         self.label_dict.pop(name)
-        self.parent().refresh_tag_buttons(self.label_dict)
+        self.parent().label_list_layout.refresh_tag_buttons(self.label_dict)
         print(self.label_dict)
 
     def modify_item(self, name_old, name_new, url_new):
@@ -94,5 +94,5 @@ class SettingWindow(QMainWindow):
                 if self.listwidget.item(item_row).text() == name_old:
                     self.listwidget.item(item_row).setText(name_new)
                     break
-            self.parent().refresh_tag_buttons(self.label_dict)
+            self.parent().label_list_layout.refresh_tag_buttons(self.label_dict)
         print(self.label_dict)

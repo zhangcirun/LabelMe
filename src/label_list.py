@@ -62,5 +62,5 @@ class LabelListLayout(QVBoxLayout):
     def action_label_buttons(self):
         sending_button = self.sender()
         label_name = str(sending_button.objectName())
-        self.parent.img_framework.update_label(label_name)
+        self.parent.img_framework_layout.update_label(label_name)
 
