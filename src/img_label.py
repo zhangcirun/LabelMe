@@ -43,13 +43,7 @@ class ImgBox(QVBoxLayout):
         self.tag.setFont(QtGui.QFont("Helvetica", 18, QtGui.QFont.Bold))
         self.tag.setAlignment(Qt.AlignVCenter)
 
-        # self.icon = QLabel()
-        # icon_img = QPixmap('../img/flag.png')
-        # self.icon.setPixmap(icon_img.scaled(30, 30, Qt.KeepAspectRatio))
-        # self.icon.setAlignment(Qt.AlignLeft)
-
         self.icon = QLabel()
-        #self.icon.setStyleSheet("padding:{0px 0px 0px 0px;}")
         gif = QMovie('../img/91.gif')
         gif.setScaledSize(QSize(30, 30))
         gif.start()
@@ -64,7 +58,7 @@ class ImgBox(QVBoxLayout):
         self.setSpacing(0)
 
     def notify(self):
-        self.parent.select_img(self.img_name)
+        self.parent.set_focus(self)
 
     def set_finished(self, is_finished):
         self.is_finished = is_finished
@@ -75,6 +69,7 @@ class ImgBox(QVBoxLayout):
         self.update_border()
 
     def update_label(self, label):
+        self.label = label
         self.tag.setText(label)
         self.tag.update()
 
@@ -90,9 +85,6 @@ class ImgBox(QVBoxLayout):
             icon_img = QPixmap('../img/check.png')
             self.icon.setPixmap(icon_img.scaled(30, 30, Qt.KeepAspectRatio))
             self.icon.setAlignment(Qt.AlignLeft)
-            # gif = QMovie('../img/gif1.gif')
-            # gif.setScaledSize(QSize(30, 30))
-            # self.icon.setMovie(gif)
 
             self.container.setStyleSheet("background-color: rgb(192, 217, 143); ")
 

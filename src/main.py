@@ -11,10 +11,11 @@ Software    : PyCharm
 import os
 from PyQt5.Qt import *
 from PyQt5 import QtGui
-from src.img_label import ImgBox
 from src.pic_button import PicButton
 from src.setting_window import SettingWindow
 from src.img_list import ImgListLayout
+from src.label_list import LabelListLayout
+from src.img_framework import ImgFrameWorkLayout
 
 
 class MainWindow(QMainWindow):
@@ -26,6 +27,8 @@ class MainWindow(QMainWindow):
     tool_bar = None
     working_directory = None
     setting_window = None
+    label_list = None
+    img_framework = None
 
     def __init__(self):
         super().__init__()
@@ -35,36 +38,17 @@ class MainWindow(QMainWindow):
         self.show()
 
     def add_components(self):
-        self.add_imgs('../img/image.png',
-                      '../img/image.png',
-                      '../img/image.png',
-                      '../img/image.png')
-        self.tag_button_list_widget_layout = QVBoxLayout()
-        self.tag_button_list_widget = QListWidget()
-        self.tag_button_list_widget.setFocusPolicy(Qt.NoFocus)
-        self.tag_button_list_widget.setStyleSheet("border: 5px solid rgb(230, 224, 209);")
-        tag_button_list_widget_text = QLabel('Labels')
-        tag_button_list_widget_text.setAlignment(Qt.AlignCenter)
-        tag_button_list_widget_text.setFont(QtGui.QFont("Helvetica", 15, QtGui.QFont.Bold))
-        self.tag_button_list_widget_layout.addWidget(tag_button_list_widget_text)
-        self.tag_button_list_widget_layout.addWidget(self.tag_button_list_widget)
-        self.tag_button_list_widget_layout.setStretch(0, 1)
-        self.tag_button_list_widget_layout.setStretch(1, 270)
-
-        self.refresh_tag_buttons({})
+        self.img_framework = ImgFrameWorkLayout(self)
+        self.label_list = LabelListLayout(self)
 
         self.centralWidget = QWidget()
         self.setCentralWidget(self.centralWidget)
 
-        self.vbox = QVBoxLayout()
-        self.vbox.addLayout(self.gridLayout)
-        #self.vbox.addWidget(QTextEdit())
-
         self.file_list_layout = ImgListLayout()
 
         self.HLayout = QHBoxLayout(self.centralWidget)
-        self.HLayout.addLayout(self.vbox)
-        self.HLayout.addLayout(self.tag_button_list_widget_layout)
+        self.HLayout.addLayout(self.img_framework)
+        self.HLayout.addLayout(self.label_list)
         self.HLayout.addLayout(self.file_list_layout)
 
         self.HLayout.setStretch(0, 6)
@@ -74,39 +58,6 @@ class MainWindow(QMainWindow):
     def add_img_name_to_list(self, img_name):
         item_new = QListWidgetItem(img_name)
         self.file_list_widget.addItem(item_new)
-
-    def add_imgs(self, img_path1, img_path2, img_path3, img_path4):
-        self.gridLayout = QGridLayout()
-        self.box1 = ImgBox(self, img_path1, 'box1')
-        self.box2 = ImgBox(self, img_path2, 'box2')
-        self.box3 = ImgBox(self, img_path3, 'box3')
-        self.box4 = ImgBox(self, img_path4, 'box4')
-
-        self.img_dictionary = {'box1': {'label': 'None', 'object': self.box1},
-                               'box2': {'label': 'None', 'object': self.box2},
-                               'box3': {'label': 'None', 'object': self.box3},
-                               'box4': {'label': 'None', 'object': self.box4}}
-
-        self.gridLayout.addLayout(self.box1, 0, 0)
-        self.gridLayout.addLayout(self.box2, 0, 1)
-        self.gridLayout.addLayout(self.box3, 1, 0)
-        self.gridLayout.addLayout(self.box4, 1, 1)
-
-    def select_img(self, img_name):
-        for key in self.img_dictionary:
-            if key != img_name:
-                self.img_dictionary[key]['object'].set_focused(False)
-
-        self.img_dictionary[img_name]['object'].set_focused(True)
-
-    def update_label(self, label_name):
-        for key in self.img_dictionary:
-            obj = self.img_dictionary[key]['object']
-            if obj.is_focused:
-                self.img_dictionary[key]['label'] = label_name
-                obj.set_finished(True)
-                obj.update_label(label_name)
-                break
 
     def add_menubar(self):
         toolbar = self.addToolBar("File")
@@ -122,45 +73,10 @@ class MainWindow(QMainWindow):
 
         toolbar.actionTriggered[QAction].connect(self.action_toolbar)
 
-    def refresh_tag_buttons(self, items):
-        self.tag_button_list_widget.clear()
-        button_adder = QPushButton()
-        button_adder.setStyleSheet("QPushButton{border-image: url(../img/labelbutton_new.png)}"
-                                 "QPushButton:hover{border-image: url(../img/labelbutton_new_hover.png)}"
-                                 "QPushButton:pressed{border-image: url(../img/labelbutton_new_press.png)}")
-        button_adder.setObjectName('adder')
-        button_adder.clicked.connect(self.action_new_setting_window)
-        item_adder = QListWidgetItem()
-        item_adder.setSizeHint(QSize(0, 80))
-
-        self.tag_button_list_widget.addItem(item_adder)
-        self.tag_button_list_widget.setItemWidget(item_adder, button_adder)
-
-        for key in items:
-            item_new = QListWidgetItem()
-            item_new.setSizeHint(QSize(0, 80))
-            button_new = QPushButton()
-            button_new.setStyleSheet("QPushButton{border-image: url(../img/labelbutton_default.png)}"
-                                     "QPushButton:hover{border-image: url(../img/labelbutton_cover.png)}"
-                                     "QPushButton:pressed{border-image: url(../img/labelbutton_pressed.png)}"
-                                     "QPushButton{font:bold; font-size:30px;color:rgb(255,255,255)}")
-            button_new.setText(str(key))
-            button_new.setObjectName(str(key))
-            button_new.clicked.connect(self.action_label_buttons)
-            self.tag_button_list_widget.addItem(item_new)
-            self.tag_button_list_widget.setItemWidget(item_new, button_new)
-
-        self.tag_button_list_widget.update()
-
     def set_width_height(self):
         # self.setLayout()
         self.setFixedWidth(1300)
         self.setFixedHeight(800)
-
-    def action_label_buttons(self):
-        sending_button = self.sender()
-        label_name = str(sending_button.objectName())
-        self.update_label(label_name)
 
     def action_new_setting_window(self):
         if self.setting_window is None:

@@ -77,7 +77,7 @@ class SettingWindow(QMainWindow):
             item_new.setIcon(QIcon('../img/label.png'))
             self.label_dict[name] = {'url': url}
             self.listwidget.addItem(item_new)
-            self.parent().refresh_tag_buttons(self.label_dict)
+            self.parent().label_list.refresh_tag_buttons(self.label_dict)
         print(self.label_dict)
 
     def delete_item(self, name):
