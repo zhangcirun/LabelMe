@@ -12,19 +12,22 @@ import os
 from PyQt5.Qt import *
 from PyQt5 import QtGui
 from src.pic_button import PicButton
-from src.img_list import ImgListLayout
+from src.img_list import TodoListLayout
+from src.img_list import DoneListLayout
 from src.label_list import LabelListLayout
 from src.img_framework import ImgFrameWorkLayout
 from src.tool_bar import ToolBar
 from src.setting_window import SettingWindow
 from src.control_buttons import ControlButtonsLayout
 
+
 class MainWindow(QMainWindow):
     tool_bar = None
     setting_window = None
     label_list_layout = None
     img_framework_layout = None
-    file_list_layout = None
+    todo_list_layout = None
+    done_list_layout = None
     control_buttons_layout = None
 
     def __init__(self):
@@ -37,7 +40,8 @@ class MainWindow(QMainWindow):
         self.tool_bar = ToolBar(self)
         self.img_framework_layout = ImgFrameWorkLayout(self)
         self.label_list_layout = LabelListLayout(self)
-        self.file_list_layout = ImgListLayout(self)
+        self.todo_list_layout = TodoListLayout(self)
+        self.done_list_layout = DoneListLayout(self)
         self.control_buttons_layout = ControlButtonsLayout(self)
 
         self.centralWidget = QWidget()
@@ -48,7 +52,11 @@ class MainWindow(QMainWindow):
         self.HLayout = QHBoxLayout(self.centralWidget)
         self.HLayout.addLayout(self.img_framework_layout)
         self.HLayout.addLayout(self.label_list_layout)
-        self.HLayout.addLayout(self.file_list_layout)
+
+        vbox = QVBoxLayout()
+        vbox.addLayout(self.todo_list_layout)
+        vbox.addLayout(self.done_list_layout)
+        self.HLayout.addLayout(vbox)
         self.HLayout.addLayout(self.control_buttons_layout)
 
         self.HLayout.setStretch(0, 6)

@@ -13,26 +13,28 @@ from PyQt5.Qt import *
 from PyQt5 import QtGui
 
 
-class ImgListLayout(QVBoxLayout):
-    img_names = []
+class TodoListLayout(QVBoxLayout):
     working_directory = ''
+    index = 0
 
     def __init__(self, parent):
         super().__init__()
         self.parent = parent
-        self.file_list_widget = QListWidget()
-        self.file_list_widget.setSelectionMode(QAbstractItemView.ExtendedSelection)
-        text = QLabel('Images')
+        self.todo_list_widget = ListWidget(parent=self)
+        text = QLabel('Todo')
         text.setAlignment(Qt.AlignCenter)
         text.setFont(QtGui.QFont("Helvetica", 15, QtGui.QFont.Bold))
         self.addWidget(text)
-        self.addWidget(self.file_list_widget)
+        self.addWidget(self.todo_list_widget)
 
-    # Todo this is a demo
-    def select_next_batch_imgs(self):
-        for i in range(0, 4):
-            if i < self.file_list_widget.count():
-                self.file_list_widget.item(i).setSelected(True)
+    def load(self, item: QListWidgetItem):
+        self.parent.img_framework_layout.load_from_todo(item)
+
+    def unload(self, item: QListWidgetItem):
+        self.parent.img_framework_layout.unload_from_todo(item)
+
+    def delete(self, item: QListWidgetItem):
+        self.todo_list_widget.takeItem(self.todo_list_widget.row(item))
 
     def update_working_dir(self, working_directory):
         self.working_directory = working_directory
@@ -40,16 +42,89 @@ class ImgListLayout(QVBoxLayout):
 
     def iterate_files(self):
         if os.path.exists(self.working_directory) and os.path.isdir(self.working_directory):
-            self.img_names = os.listdir(self.working_directory)
-            self.file_list_widget.clear()
-            for file_name in self.img_names:
+            tmp = os.listdir(self.working_directory)
+
+            self.todo_list_widget.clear()
+
+            for file_name in tmp:
                 if file_name.endswith('.jpg') or file_name.endswith('.png'):
-                    self.add_img_name_to_list(file_name)
+                    img_path = self.working_directory + file_name
+                    print(img_path)
+                    self.todo_list_widget.new_item_shallow(img_path=img_path, img_name=file_name, label='None')
 
-            self.file_list_widget.update()
-            self.select_next_batch_imgs()
-            print(self.img_names)
+            self.todo_list_widget.update()
 
-    def add_img_name_to_list(self, img_name):
-        item_new = QListWidgetItem(img_name)
-        self.file_list_widget.addItem(item_new)
+
+class DoneListLayout(QVBoxLayout):
+    def __init__(self, parent):
+        super().__init__()
+        self.parent = parent
+        self.done_list_widget = ListWidget(parent=self)
+        text = QLabel('Done')
+        text.setAlignment(Qt.AlignCenter)
+        text.setFont(QtGui.QFont("Helvetica", 15, QtGui.QFont.Bold))
+        self.addWidget(text)
+        self.addWidget(self.done_list_widget)
+
+    def add_item(self, item):
+        self.done_list_widget.new_item_deep(item)
+        item.setText('[' + item.label + '] ' + item.img_name)
+        self.sort()
+        self.done_list_widget.update()
+
+    def load(self, item: QListWidgetItem):
+        self.parent.img_framework_layout.load_from_done(item)
+
+    def unload(self, item: QListWidgetItem):
+        self.parent.img_framework_layout.unload_from_done(item)
+
+    def sort(self):
+        self.done_list_widget.sortItems()
+
+class ListWidget(QListWidget):
+
+    def __init__(self, parent):
+        super().__init__()
+        self.parent = parent
+        self.setSelectionMode(QAbstractItemView.MultiSelection)
+        self.itemClicked.connect(self.item_clicked)
+
+    def new_item_shallow(self, img_path, img_name, label):
+        self.addItem(ListItem(self.parent, img_path, img_name, label))
+
+    def new_item_deep(self, item: QListWidgetItem):
+        self.addItem(item)
+
+    def item_clicked(self, item: QListWidgetItem) -> None:
+        item.setSelected(not item.isSelected())
+        if len(self.selectedItems()) >= 4:
+            if item.isSelected():
+                self.unload(item)
+        else:
+            if item.isSelected():
+                self.unload(item)
+            else:
+                self.load(item)
+
+    def load(self, item: QListWidgetItem):
+        item.setSelected(True)
+        self.parent.load(item)
+
+    def unload(self, item: QListWidgetItem):
+        item.setSelected(False)
+        self.parent.unload(item)
+
+
+class ListItem(QListWidgetItem):
+
+    def __init__(self, parent, img_path, img_name, label):
+        super().__init__()
+        self.parent = parent
+        self.setText(img_name)
+        self.img_path = img_path
+        self.img_name = img_name
+        self.label = label
+
+    def set_label(self, label):
+        self.label = label
+

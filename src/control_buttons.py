@@ -22,6 +22,7 @@ class ControlButtonsLayout(QVBoxLayout):
                                        "QPushButton:hover{border-image: url(../img/save_hover.png)}"
                                        "QPushButton:pressed{border-image: url(../img/save_press.png)}")
         self.save_button.setFixedSize(60, 60)
+        self.save_button.clicked.connect(self.parent.img_framework_layout.save)
 
         self.next_button = QPushButton()
         self.next_button.setObjectName('next')
@@ -29,6 +30,7 @@ class ControlButtonsLayout(QVBoxLayout):
                                        "QPushButton:hover{border-image: url(../img/next_hover.png)}"
                                        "QPushButton:pressed{border-image: url(../img/next_press.png)}")
         self.next_button.setFixedSize(60, 60)
+        #self.next_button.clicked.connect(self.parent.img_framework_layout.skip)
 
         self.reset_button = QPushButton()
         self.reset_button.setObjectName('reset')

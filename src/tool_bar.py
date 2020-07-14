@@ -49,4 +49,5 @@ class ToolBar(QToolBar):
         if not url.endswith('/'):
             url += '/'
 
-        self.parent.file_list_layout.update_working_dir(url)
+        self.parent.todo_list_layout.update_working_dir(url)
+        #self.parent.img_framework_layout.load()

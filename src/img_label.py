@@ -10,36 +10,45 @@ Software    : PyCharm
 """
 from PyQt5.Qt import *
 from PyQt5 import QtGui
+from src.img_list import ListItem
 
 
 class ImgLabel(QLabel):
     def __init__(self, parent, img_path):
         super().__init__()
         self.parent = parent
+        self.set_img(img_path)
+        self.setStyleSheet("border:10px solid rgb(230, 224, 209); ")
+
+    def set_img(self, img_path):
         img = QPixmap(img_path)
         self.setPixmap(img.scaled(400, 400, Qt.KeepAspectRatio))
-        self.setStyleSheet("border:10px solid rgb(230, 224, 209); ")
 
     def mousePressEvent(self, ev: QtGui.QMouseEvent) -> None:
         self.parent.notify()
 
 
 class ImgBox(QVBoxLayout):
+    DEFAULT_PATH = '../img/image.png'
     is_focused = False
     is_finished = False
-    label = 'None'
+    item = None
 
-    def __init__(self, parent, img_path, img_name):
+    def __init__(self, parent, item: ListItem):
         super().__init__()
         self.parent = parent
-        self.img = ImgLabel(self, img_path)
-        self.img_name = img_name
+        self.item = item
+
+        if self.item is None:
+            self.img = ImgLabel(self, self.DEFAULT_PATH)
+        else:
+            self.img = ImgLabel(self, item.img_path)
 
         self.container = QWidget()
         self.hbox = QHBoxLayout(self.container)
         self.container.setStyleSheet("background-color: rgb(189, 188, 185); ")
 
-        self.tag = QLabel('None')
+        self.tag = QLabel('')
         self.tag.setFont(QtGui.QFont("Helvetica", 18, QtGui.QFont.Bold))
         self.tag.setAlignment(Qt.AlignVCenter)
 
@@ -72,7 +81,7 @@ class ImgBox(QVBoxLayout):
         self.update_border()
 
     def update_label(self, label):
-        self.label = label
+        self.item.set_label(label)
         self.tag.setText(label)
         self.tag.update()
 
@@ -82,7 +91,6 @@ class ImgBox(QVBoxLayout):
         else:
             self.img.setStyleSheet("border:10px solid rgb(217, 216, 212); ")
 
-        print(self.is_finished)
         if self.is_finished:
             self.gif.stop()
             self.icon.setPixmap(self.icon_img)
@@ -97,8 +105,50 @@ class ImgBox(QVBoxLayout):
         self.icon.update()
         self.img.update()
 
-    def reset(self):
-        self.update_label('None')
+    def load_from_todo(self, item):
+        self.item = item
+        self.img.set_img(self.item.img_path)
+        self.item.set_label(self.item.label)
+        self.tag.setText(self.item.label)
         self.is_finished = False
         self.is_focused = False
         self.update_border()
+
+    def unload_from_todo(self):
+        self.item.set_label('None')
+        self.tag.setText('')
+        self.item = None
+        self.is_finished = False
+        self.is_focused = False
+        self.update_border()
+        self.img.set_img(self.DEFAULT_PATH)
+
+    def load_from_done(self, item):
+        self.item = item
+        self.img.set_img(self.item.img_path)
+        self.item.set_label(self.item.label)
+        self.tag.setText(self.item.label)
+        self.is_finished = True
+        self.is_focused = False
+        self.update_border()
+
+    def unload_from_done(self):
+        self.tag.setText('')
+        self.item.setText('[' + self.item.label + '] ' + self.item.img_name)
+        self.item = None
+        self.is_finished = False
+        self.is_focused = False
+        self.update_border()
+        self.img.set_img(self.DEFAULT_PATH)
+
+    def delete(self):
+        self.img.set_img(self.DEFAULT_PATH)
+        self.tag.setText('')
+        self.item.setSelected(False)
+        self.item = None
+        self.is_finished = False
+        self.is_focused = False
+        self.update_border()
+
+    def reset(self):
+        pass
