@@ -44,6 +44,10 @@ class ImgFrameWorkLayout(QGridLayout):
                 box.update_label(label_name)
                 break
 
+    def delete_all(self):
+        for box in self.boxes:
+            box.delete()
+
     def reset_all(self):
         for box in self.boxes:
             box.reset()
@@ -51,9 +55,26 @@ class ImgFrameWorkLayout(QGridLayout):
     def save(self):
         for box in self.boxes:
             if box.is_finished and box.item is not None:
-                self.parent.todo_list_layout.delete(box.item)
-                self.parent.done_list_layout.add_item(box.item)
+                self.parent.list_layout.todo_list_layout.delete(box.item)
+                self.parent.list_layout.done_list_layout.add_item(box.item)
                 box.delete()
+        self.load_next_four()
+
+    def load_next_four(self):
+        items = self.parent.list_layout.todo_list_layout.load_next_four()
+        for item in items:
+            self.load_from_todo(item)
+        self.move_cursor()
+
+    def move_cursor(self):
+        for box in self.boxes:
+            if box.is_focused:
+                box.set_focused(False)
+
+        for box in self.boxes:
+            if not box.is_finished and not box.is_focused and box.item is not None:
+                box.set_focused(True)
+                break
 
     def load_from_todo(self, item):
         for box in self.boxes:
@@ -77,4 +98,4 @@ class ImgFrameWorkLayout(QGridLayout):
             if box.item is item:
                 box.unload_from_done()
 
-        self.parent.done_list_layout.sort()
+        self.parent.list_layout.done_list_layout.sort()

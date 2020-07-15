@@ -8,9 +8,10 @@ Contact     : cirun.zhang@envision-digital.com
 Time        : 2020/7/8 
 Software    : PyCharm
 """
-from PyQt5.QtWidgets import *
 from src.item_window import ItemWindow
+from PyQt5.QtWidgets import *
 from PyQt5.QtGui import QIcon
+from PyQt5.QtCore import *
 
 
 class SettingWindow(QMainWindow):
@@ -22,6 +23,7 @@ class SettingWindow(QMainWindow):
         self.set_width_height()
         self.add_components()
         self.setWindowTitle('Output Setting')
+        #self.setWindowFlags(Qt.WindowStaysOnTopHint)
 
     def set_width_height(self):
         self.setFixedWidth(400)
@@ -67,7 +69,7 @@ class SettingWindow(QMainWindow):
         items = self.listwidget.selectedItems()
         if len(items) > 0:
             name = items[0].text()
-            url = self.label_dict[name]['url']
+            url = self.label_dict[name]
             itemwindow = ItemWindow(parent=self, name_old=name, url_old=url)
             itemwindow.show()
 
@@ -75,7 +77,7 @@ class SettingWindow(QMainWindow):
         if name not in self.label_dict:
             item_new = QListWidgetItem(name)
             item_new.setIcon(QIcon('../img/label.png'))
-            self.label_dict[name] = {'url': url}
+            self.label_dict[name] = url
             self.listwidget.addItem(item_new)
             self.parent().label_list_layout.refresh_tag_buttons(self.label_dict)
         print(self.label_dict)
@@ -88,11 +90,13 @@ class SettingWindow(QMainWindow):
     def modify_item(self, name_old, name_new, url_new):
         if name_new not in self.label_dict:
             self.delete_item(name_old)
-            self.label_dict[name_new] = {'url': url_new}
+            self.label_dict[name_new] = url_new
 
             for item_row in range(0, self.listwidget.count()):
                 if self.listwidget.item(item_row).text() == name_old:
                     self.listwidget.item(item_row).setText(name_new)
                     break
             self.parent().label_list_layout.refresh_tag_buttons(self.label_dict)
+        else:
+            self.label_dict[name_new] = url_new
         print(self.label_dict)

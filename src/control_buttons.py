@@ -30,7 +30,7 @@ class ControlButtonsLayout(QVBoxLayout):
                                        "QPushButton:hover{border-image: url(../img/next_hover.png)}"
                                        "QPushButton:pressed{border-image: url(../img/next_press.png)}")
         self.next_button.setFixedSize(60, 60)
-        #self.next_button.clicked.connect(self.parent.img_framework_layout.skip)
+        self.next_button.clicked.connect(self.parent.img_framework_layout.load_next_four)
 
         self.reset_button = QPushButton()
         self.reset_button.setObjectName('reset')
@@ -38,7 +38,7 @@ class ControlButtonsLayout(QVBoxLayout):
                                         "QPushButton:hover{border-image: url(../img/reset_hover.png)}"
                                         "QPushButton:pressed{border-image: url(../img/reset_press.png)}")
         self.reset_button.setFixedSize(60, 60)
-        self.reset_button.clicked.connect(self.parent.img_framework_layout.reset_all)
+        self.reset_button.clicked.connect(self.parent.img_framework_layout.delete_all)
 
         self.addStretch(1)
         self.addWidget(self.save_button)

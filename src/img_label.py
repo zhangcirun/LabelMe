@@ -144,11 +144,17 @@ class ImgBox(QVBoxLayout):
     def delete(self):
         self.img.set_img(self.DEFAULT_PATH)
         self.tag.setText('')
-        self.item.setSelected(False)
+
+        if self.item is not None:
+            self.item.setSelected(False)
+
         self.item = None
         self.is_finished = False
         self.is_focused = False
         self.update_border()
 
     def reset(self):
-        pass
+        self.item.set_label('None')
+        self.tag.setText(self.item.label)
+        self.is_finished = False
+        self.update_border()

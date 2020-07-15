@@ -20,6 +20,7 @@ class ItemWindow(QMainWindow):
         self.url_old = url_old
         self.set_width_height()
         self.add_component()
+        #self.setWindowFlags(Qt.WindowStaysOnTopHint)
 
     def set_width_height(self):
         self.setFixedWidth(550)
@@ -29,20 +30,26 @@ class ItemWindow(QMainWindow):
         self.hwidget1 = QWidget()
         self.hbox1 = QHBoxLayout(self.hwidget1)
         self.text_line_edit = QLineEdit()
-        self.text_line_edit.setFixedWidth(20)
+        self.text_line_edit.setFixedWidth(300)
         if self.name_old is not None:
             self.text_line_edit.setText(self.name_old)
-        self.hbox1.addWidget(QLabel("Category Name:"))
+        label1 = QLabel("Category Name:")
+        label1.setFixedWidth(100)
+        self.hbox1.addWidget(label1)
         self.hbox1.addWidget(self.text_line_edit)
+        self.hbox1.addStretch()
 
         self.hwidget2 = QWidget()
         self.hbox2 = QHBoxLayout(self.hwidget2)
         self.text_url_edit = QLineEdit()
         self.text_url_edit.setFixedWidth(300)
+        self.text_url_edit.setReadOnly(True)
         if self.url_old is not None:
             self.text_url_edit.setText(self.url_old)
 
-        self.hbox2.addWidget(QLabel("Output URL:"))
+        label2 = QLabel("Output URL:")
+        label2.setFixedWidth(100)
+        self.hbox2.addWidget(label2)
 
         self.browse = QPushButton("Select")
         self.browse.clicked.connect(self.action_browse)
@@ -75,8 +82,8 @@ class ItemWindow(QMainWindow):
         self.vLayout.addWidget(self.button_widget)
 
     def action_commit(self):
-        name_new = self.text_line_edit.text()
-        url_new = self.text_url_edit.text()
+        name_new = str(self.text_line_edit.text())
+        url_new = str(self.text_url_edit.text())
 
         if name_new != "" and url_new != "":
             if self.name_old is None:

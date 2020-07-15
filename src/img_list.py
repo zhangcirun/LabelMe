@@ -15,6 +15,38 @@ from PyQt5 import QtCore
 from PyQt5.Qt import *
 
 
+class VListLayout(QVBoxLayout):
+
+    def __init__(self, parent):
+        super().__init__()
+        self.parent = parent
+        self.todo_list_layout = TodoListLayout(self)
+        self.done_list_layout = DoneListLayout(self)
+        self.addLayout(self.todo_list_layout)
+        self.addLayout(self.done_list_layout)
+
+    def save_all(self):
+        label_dict = self.parent.setting_window.label_dict
+        saved_indices = []
+        for i in range(0, self.done_list_layout.done_list_widget.count()):
+            try:
+                item = self.done_list_layout.done_list_widget.item(i)
+                path_from = item.img_path
+                path_to = label_dict[item.label]
+                print('save ' + path_from + ' to ' + path_to)
+                saved_indices.append(i)
+            except Exception as e:
+                print(e)
+
+    def get_count(self):
+        return len(self.todo_list_layout.todo_list_widget.selectedItems()) + len(
+            self.done_list_layout.done_list_widget.selectedItems())
+
+    def clear_all(self):
+        self.todo_list_layout.todo_list_widget.clear()
+        self.done_list_layout.done_list_widget.clear()
+
+
 class TodoListLayout(QVBoxLayout):
     working_directory = ''
     index = 0
@@ -29,11 +61,26 @@ class TodoListLayout(QVBoxLayout):
         self.addWidget(text)
         self.addWidget(self.todo_list_widget)
 
+    def load_next_four(self):
+        items = []
+        complement = 4 - self.parent.get_count()
+
+        for i in range(0, self.todo_list_widget.count()):
+            if complement <= 0:
+                break
+            item = self.todo_list_widget.item(i)
+            if not item.isSelected():
+                item.setSelected(True)
+                items.append(item)
+                complement -= 1
+
+        return items
+
     def load(self, item: QListWidgetItem):
-        self.parent.img_framework_layout.load_from_todo(item)
+        self.parent.parent.img_framework_layout.load_from_todo(item)
 
     def unload(self, item: QListWidgetItem):
-        self.parent.img_framework_layout.unload_from_todo(item)
+        self.parent.parent.img_framework_layout.unload_from_todo(item)
 
     def delete(self, item: QListWidgetItem):
         self.todo_list_widget.takeItem(self.todo_list_widget.row(item))
@@ -74,13 +121,23 @@ class DoneListLayout(QVBoxLayout):
         self.done_list_widget.update()
 
     def load(self, item: QListWidgetItem):
-        self.parent.img_framework_layout.load_from_done(item)
+        self.parent.parent.img_framework_layout.load_from_done(item)
 
     def unload(self, item: QListWidgetItem):
-        self.parent.img_framework_layout.unload_from_done(item)
+        self.parent.parent.img_framework_layout.unload_from_done(item)
 
     def sort(self):
         self.done_list_widget.sortItems()
+
+    def clear(self):
+        self.done_list_widget.clear()
+    # def get_items(self):
+    #     items = []
+    #     for x in range(0, self.done_list_widget.count() - 1):
+    #         items.append(x)
+    #
+    #     self.done_list_widget.clear()
+    #     return items
 
 
 class ListWidget(QListWidget):
@@ -92,7 +149,7 @@ class ListWidget(QListWidget):
                            "QListWidget:item:selected:!active {color: white;}")
         self.setFocusPolicy(Qt.NoFocus)
         self.setSelectionMode(QAbstractItemView.MultiSelection)
-       # self.itemPressed.connect(self.item_clicked)
+        self.itemPressed.connect(self.item_clicked)
 
     def new_item_shallow(self, img_path, img_name, label):
         self.addItem(ListItem(self.parent, img_path, img_name, label))
@@ -100,33 +157,40 @@ class ListWidget(QListWidget):
     def new_item_deep(self, item: QListWidgetItem):
         self.addItem(item)
 
-    # def item_clicked(self, item: QListWidgetItem) -> None:
-    #     item.setSelected(not item.isSelected())
+    def item_clicked(self, item: QListWidgetItem) -> None:
+        item.setSelected(not item.isSelected())
+        count = self.parent.parent.get_count()
+        if count >= 4:
+            if item.isSelected():
+                self.unload(item)
+        else:
+            if item.isSelected():
+                self.unload(item)
+            else:
+                self.load(item)
+
+    # def selectionCommand(self, index, event):
+    #     item = self.item(index.row())
     #     if len(self.selectedItems()) >= 4:
     #         if item.isSelected():
     #             self.unload(item)
+    #         return QItemSelectionModel.Deselect
     #     else:
     #         if item.isSelected():
     #             self.unload(item)
+    #             return QItemSelectionModel.Deselect
     #         else:
-    #             self.load(item)
-
-    def selectionCommand(self, index, event):
-        if len(self.selectedItems()) >= 4:
-            self.unload(self.item(index.row()))
-            return QItemSelectionModel.Deselect
-        else:
-            self.load(self.item(index.row()))
-            return super().selectionCommand(index, event)
+    #             self.load(self.item(index.row()))
+    #             return super().selectionCommand(index, event)
 
     def load(self, item: QListWidgetItem):
-        #item.setSelected(True)
+        item.setSelected(True)
         self.parent.load(item)
 
     def unload(self, item: QListWidgetItem):
-        #item.setSelected(False)
         if item.isSelected():
             self.parent.unload(item)
+        item.setSelected(False)
 
 
 class ListItem(QListWidgetItem):
