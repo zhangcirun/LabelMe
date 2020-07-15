@@ -9,8 +9,10 @@ Time        : 2020/7/13
 Software    : PyCharm
 """
 import os
-from PyQt5.Qt import *
+
 from PyQt5 import QtGui
+from PyQt5 import QtCore
+from PyQt5.Qt import *
 
 
 class TodoListLayout(QVBoxLayout):
@@ -49,7 +51,6 @@ class TodoListLayout(QVBoxLayout):
             for file_name in tmp:
                 if file_name.endswith('.jpg') or file_name.endswith('.png'):
                     img_path = self.working_directory + file_name
-                    print(img_path)
                     self.todo_list_widget.new_item_shallow(img_path=img_path, img_name=file_name, label='None')
 
             self.todo_list_widget.update()
@@ -81,13 +82,17 @@ class DoneListLayout(QVBoxLayout):
     def sort(self):
         self.done_list_widget.sortItems()
 
+
 class ListWidget(QListWidget):
 
     def __init__(self, parent):
         super().__init__()
         self.parent = parent
+        self.setStyleSheet("QListWidget:item:selected:!active {background: rgb(3, 73, 252);}"
+                           "QListWidget:item:selected:!active {color: white;}")
+        self.setFocusPolicy(Qt.NoFocus)
         self.setSelectionMode(QAbstractItemView.MultiSelection)
-        self.itemClicked.connect(self.item_clicked)
+       # self.itemPressed.connect(self.item_clicked)
 
     def new_item_shallow(self, img_path, img_name, label):
         self.addItem(ListItem(self.parent, img_path, img_name, label))
@@ -95,24 +100,33 @@ class ListWidget(QListWidget):
     def new_item_deep(self, item: QListWidgetItem):
         self.addItem(item)
 
-    def item_clicked(self, item: QListWidgetItem) -> None:
-        item.setSelected(not item.isSelected())
+    # def item_clicked(self, item: QListWidgetItem) -> None:
+    #     item.setSelected(not item.isSelected())
+    #     if len(self.selectedItems()) >= 4:
+    #         if item.isSelected():
+    #             self.unload(item)
+    #     else:
+    #         if item.isSelected():
+    #             self.unload(item)
+    #         else:
+    #             self.load(item)
+
+    def selectionCommand(self, index, event):
         if len(self.selectedItems()) >= 4:
-            if item.isSelected():
-                self.unload(item)
+            self.unload(self.item(index.row()))
+            return QItemSelectionModel.Deselect
         else:
-            if item.isSelected():
-                self.unload(item)
-            else:
-                self.load(item)
+            self.load(self.item(index.row()))
+            return super().selectionCommand(index, event)
 
     def load(self, item: QListWidgetItem):
-        item.setSelected(True)
+        #item.setSelected(True)
         self.parent.load(item)
 
     def unload(self, item: QListWidgetItem):
-        item.setSelected(False)
-        self.parent.unload(item)
+        #item.setSelected(False)
+        if item.isSelected():
+            self.parent.unload(item)
 
 
 class ListItem(QListWidgetItem):
@@ -128,3 +142,6 @@ class ListItem(QListWidgetItem):
     def set_label(self, label):
         self.label = label
 
+    # def setSelected(self, aselect: bool) -> None:
+    #     super().setSelected(aselect)
+    #     print(aselect)
