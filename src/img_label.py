@@ -49,17 +49,22 @@ class ImgBox(QVBoxLayout):
         self.container.setStyleSheet("background-color: rgb(189, 188, 185); ")
 
         self.tag = QLabel('')
-        self.tag.setFont(QtGui.QFont("Helvetica", 18, QtGui.QFont.Bold))
-        self.tag.setAlignment(Qt.AlignVCenter)
+        self.tag.setFont(QtGui.QFont("Helvetica", 22, QtGui.QFont.Bold))
+        self.tag.setAlignment(Qt.AlignRight | Qt.AlignVCenter)
 
         self.icon = QLabel()
-        self.icon_img = QPixmap('../img/check.png')
-        self.icon_img = self.icon_img.scaled(30, 30, Qt.KeepAspectRatio)
+        self.icon.setAlignment(Qt.AlignLeft)
+        self.icon_img_check = QPixmap('../img/check.png')
+        self.icon_img_check = self.icon_img_check.scaled(40, 40, Qt.KeepAspectRatio)
 
-        self.gif = QMovie('../img/91.gif')
-        self.gif.setScaledSize(QSize(30, 30))
-        self.gif.start()
-        self.icon.setMovie(self.gif)
+        self.icon_img_pending = QPixmap('../img/pending.png')
+        self.icon_img_pending = self.icon_img_pending.scaled(40, 40, Qt.KeepAspectRatio)
+
+        # self.gif = QMovie('../img/91.gif')
+        # self.gif.setScaledSize(QSize(30, 30))
+        # self.gif.start()
+        self.icon.setFixedSize(40, 40)
+        #self.icon.setPixmap(self.icon_img_pending)
 
         self.hbox.addWidget(self.icon, 1)
         self.hbox.addStretch(6)
@@ -92,13 +97,12 @@ class ImgBox(QVBoxLayout):
             self.img.setStyleSheet("border:10px solid rgb(217, 216, 212); ")
 
         if self.is_finished:
-            self.gif.stop()
-            self.icon.setPixmap(self.icon_img)
-            self.icon.setAlignment(Qt.AlignLeft)
+            #self.gif.stop()
+            self.icon.setPixmap(self.icon_img_check)
             self.container.setStyleSheet("background-color: rgb(192, 217, 143); ")
         else:
-            self.gif.start()
-            self.icon.setMovie(self.gif)
+            #self.gif.start()
+            self.icon.setPixmap(self.icon_img_pending)
             self.container.setStyleSheet("background-color: rgb(189, 188, 185); ")
 
         self.container.update()
@@ -121,6 +125,7 @@ class ImgBox(QVBoxLayout):
         self.is_finished = False
         self.is_focused = False
         self.update_border()
+        self.icon.setPixmap(QPixmap())
         self.img.set_img(self.DEFAULT_PATH)
 
     def load_from_done(self, item):
@@ -139,6 +144,7 @@ class ImgBox(QVBoxLayout):
         self.is_finished = False
         self.is_focused = False
         self.update_border()
+        self.icon.setPixmap(QPixmap())
         self.img.set_img(self.DEFAULT_PATH)
 
     def delete(self):
