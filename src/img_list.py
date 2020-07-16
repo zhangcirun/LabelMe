@@ -9,10 +9,10 @@ Time        : 2020/7/13
 Software    : PyCharm
 """
 import os
-
 from PyQt5 import QtGui
 from PyQt5 import QtCore
 from PyQt5.Qt import *
+from shutil import copy
 
 
 class VListLayout(QVBoxLayout):
@@ -27,16 +27,25 @@ class VListLayout(QVBoxLayout):
 
     def save_all(self):
         label_dict = self.parent.setting_window.label_dict
-        saved_indices = []
+        saved_failed = []
+
+        self.parent.img_framework_layout.clear_all_done_items()
         for i in range(0, self.done_list_layout.done_list_widget.count()):
+            item = self.done_list_layout.done_list_widget.item(i)
             try:
-                item = self.done_list_layout.done_list_widget.item(i)
                 path_from = item.img_path
                 path_to = label_dict[item.label]
-                print('save ' + path_from + ' to ' + path_to)
-                saved_indices.append(i)
+                copy(path_from, path_to)
             except Exception as e:
+                saved_failed.append(item)
                 print(e)
+
+        self.done_list_layout.clear()
+
+        for item in saved_failed:
+            self.done_list_layout.addItem(item)
+
+        self.done_list_layout.update()
 
     def get_count(self):
         return len(self.todo_list_layout.todo_list_widget.selectedItems()) + len(
@@ -115,6 +124,7 @@ class DoneListLayout(QVBoxLayout):
         self.addWidget(self.done_list_widget)
 
     def add_item(self, item):
+        item.parent = self
         self.done_list_widget.new_item_deep(item)
         item.setText('[' + item.label + '] ' + item.img_name)
         self.sort()
@@ -131,13 +141,6 @@ class DoneListLayout(QVBoxLayout):
 
     def clear(self):
         self.done_list_widget.clear()
-    # def get_items(self):
-    #     items = []
-    #     for x in range(0, self.done_list_widget.count() - 1):
-    #         items.append(x)
-    #
-    #     self.done_list_widget.clear()
-    #     return items
 
 
 class ListWidget(QListWidget):
