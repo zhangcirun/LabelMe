@@ -55,7 +55,6 @@ class ImgFrameWorkLayout(QGridLayout):
     def clear_all_done_items(self):
         for box in self.boxes:
             item = box.item
-            print(item.parent)
             if item is not None and item.parent is self.parent.list_layout.done_list_layout:
                 box.delete()
 

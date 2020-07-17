@@ -26,6 +26,7 @@ class VListLayout(QVBoxLayout):
         self.addLayout(self.done_list_layout)
 
     def save_all(self):
+        count = 0
         label_dict = self.parent.setting_window.label_dict
         saved_failed = []
 
@@ -36,16 +37,19 @@ class VListLayout(QVBoxLayout):
                 path_from = item.img_path
                 path_to = label_dict[item.label]
                 copy(path_from, path_to)
+                count += 1
             except Exception as e:
-                saved_failed.append(item)
+                item_copy = ListItem(item.parent, item.img_path, item.img_name, item.label)
+                saved_failed.append(item_copy)
                 print(e)
 
         self.done_list_layout.clear()
 
         for item in saved_failed:
-            self.done_list_layout.addItem(item)
+            self.done_list_layout.add_item(item)
 
         self.done_list_layout.update()
+        QMessageBox.information(self.parent, 'info', str(count) + ' images saved', QMessageBox.Ok)
 
     def get_count(self):
         return len(self.todo_list_layout.todo_list_widget.selectedItems()) + len(

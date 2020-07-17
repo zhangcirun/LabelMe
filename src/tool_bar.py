@@ -56,4 +56,4 @@ class ToolBar(QToolBar):
 
     def action_save(self):
         self.parent.list_layout.save_all()
-        print('save')
+        # QMessageBox.information(self, 'info', 'saved', QMessageBox.Ok)

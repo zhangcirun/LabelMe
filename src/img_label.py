@@ -157,7 +157,9 @@ class ImgBox(QVBoxLayout):
         self.item = None
         self.is_finished = False
         self.is_focused = False
+        print('delete')
         self.update_border()
+        self.icon.setPixmap(QPixmap())
 
     def reset(self):
         self.item.set_label('None')
