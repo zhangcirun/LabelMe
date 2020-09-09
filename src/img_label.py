@@ -21,8 +21,10 @@ class ImgLabel(QLabel):
         self.setStyleSheet("border:10px solid rgb(230, 224, 209); ")
 
     def set_img(self, img_path):
+        self.setScaledContents(True)
         img = QPixmap(img_path)
-        self.setPixmap(img.scaled(400, 400, Qt.KeepAspectRatio))
+        self.setPixmap(img)
+        self.setMaximumSize(400, 400)
 
     def mousePressEvent(self, ev: QtGui.QMouseEvent) -> None:
         self.parent.notify()
@@ -59,12 +61,7 @@ class ImgBox(QVBoxLayout):
 
         self.icon_img_pending = QPixmap('../img/pending.png')
         self.icon_img_pending = self.icon_img_pending.scaled(40, 40, Qt.KeepAspectRatio)
-
-        # self.gif = QMovie('../img/91.gif')
-        # self.gif.setScaledSize(QSize(30, 30))
-        # self.gif.start()
         self.icon.setFixedSize(40, 40)
-        #self.icon.setPixmap(self.icon_img_pending)
 
         self.hbox.addWidget(self.icon, 1)
         self.hbox.addStretch(6)
